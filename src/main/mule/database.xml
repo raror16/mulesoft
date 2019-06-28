@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a8907c54-4f8a-4759-8e5f-e6b697698f6c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="b49cfbf1-4873-4ce8-ae24-23ba91f44117" >
+		<db:my-sql-connection host="mudb.mulesoft-training.com" port="3306" user="mule" password="mule" database="training" />
+	</db:config>
+	<flow name="databaseFlow" doc:id="cdacb1dc-e5f2-49cd-8a97-3bc119059e89" >
+		<http:listener doc:name="Listener" doc:id="47cad616-1da1-489c-a153-0da33bbe9376" config-ref="HTTP_Listener_config" path="/database" allowedMethods="GET"/>
+		<db:select doc:id="dbdc5b3d-6c7f-4fd5-9269-91aeca5115fd" config-ref="Database_Config">
+			<db:sql >select * from american</db:sql>
+		</db:select>
+		<set-payload value="#[%dw 2.0
+output application/json
+---
+payload]" doc:name="Set Payload" doc:id="b3d0cac9-f66b-4b19-be71-5367547a408e"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0bbe32d4-6b21-4b90-85eb-96bef3d93e6c" message="#[payload]"/>
+	</flow>
+</mule>
